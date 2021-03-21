@@ -2,7 +2,7 @@ const SequelizeSlugify = require('sequelize-slugify');
 
 module.exports = (sequlize, DataTypes) => {
   let Model = sequlize.define(
-    'orders',
+    'guest_orders',
     {
       id: {
         type: DataTypes.INTEGER(11),
@@ -23,10 +23,6 @@ module.exports = (sequlize, DataTypes) => {
         type: DataTypes.DOUBLE(11),
         defaultValue: 0,
       },
-      shipping_charge: {
-        type: DataTypes.DOUBLE(11),
-        defaultValue: 0,
-      },
       total_amount: {
         type: DataTypes.DOUBLE(11),
         defaultValue: 0,
@@ -38,43 +34,18 @@ module.exports = (sequlize, DataTypes) => {
       ordered_date: {
         type: DataTypes.DATE,
       },
-      shipping_date: {
-        type: DataTypes.DATE,
-      },
-      completed_date: {
-        type: DataTypes.DATE,
-      },
-      cancelled_date: {
-        type: DataTypes.DATE,
-      },
-      payment_date: {
-        type: DataTypes.DATE,
-      },
-      status: {
-        type: DataTypes.STRING,
-        defaultValue: 'PENDING',
-        validate: {
-          isIn: {
-            args: [['PENDING', 'ACTIVE', 'CANCELLED', 'SHIPPING', 'COMPLETED']],
-            msg:
-              'Status must be PENDING, ACTIVE,CANCELLED,SHIPPING OR COMPLETED',
-          },
-        },
-      },
-
-      comment: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-      },
     },
     {
       paranoid: true,
-      tableName: 'orders',
+      tableName: 'guest_orders',
     },
   );
 
   Model.associate = function (models) {
-    this.belongsTo(models.users, { foreignKey: 'user_id', targetKey: 'id' });
+    this.belongsTo(models.guest_users, {
+      foreignKey: 'user_id',
+      targetKey: 'user_id',
+    });
   };
 
   return Model;

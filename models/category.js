@@ -43,7 +43,10 @@ module.exports = (sequlize, DataTypes) => {
     source: ['name'],
   });
   Model.associate = function (models) {
-    this.belongsTo(models.users, { foreignKey: 'author_id', targetKey: 'id' });
+    this.hasMany(models.products, {
+      foreignKey: 'id',
+      targetKey: 'category_id',
+    });
   };
   return Model;
 };

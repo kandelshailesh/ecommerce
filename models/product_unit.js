@@ -23,6 +23,12 @@ module.exports = (sequlize, DataTypes) => {
     },
   );
 
-  Model.associate = function (models) {};
+  Model.associate = function (models) {
+    this.belongsTo(models.unit, { foreignKey: 'unit_id', targetKey: 'id' });
+    this.belongsTo(models.products, {
+      foreignKey: 'product_id',
+      targetKey: 'id',
+    });
+  };
   return Model;
 };

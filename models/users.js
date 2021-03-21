@@ -78,26 +78,7 @@ module.exports = function (sequelize, DataTypes) {
     source: ['username'],
   });
   Model.associate = function (models) {
-    this.belongsTo(models.subscription_plan, {
-      foreignKey: 'subscription_id',
-      targetKey: 'id',
-    });
-    this.hasMany(models.blogs, {
-      foreignKey: 'author_id',
-      sourceKey: 'id',
-    });
-    this.hasMany(models.events, {
-      foreignKey: 'author_id',
-      sourceKey: 'id',
-    });
-    this.hasMany(models.schedule, {
-      foreignKey: 'user_id',
-      sourceKey: 'id',
-    });
-    this.hasMany(models.transaction, {
-      foreignKey: 'user_id',
-      sourceKey: 'id',
-    });
+    this.hasMany(models.orders, { foreignKey: 'user_id', sourceKey: 'id' });
   };
 
   Model.prototype.getJWT = function () {

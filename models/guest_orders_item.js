@@ -2,7 +2,7 @@ const SequelizeSlugify = require('sequelize-slugify');
 
 module.exports = (sequlize, DataTypes) => {
   let Model = sequlize.define(
-    'orders_item',
+    'guest_orders_item',
     {
       id: {
         type: DataTypes.INTEGER(11),
@@ -25,11 +25,14 @@ module.exports = (sequlize, DataTypes) => {
     },
     {
       paranoid: true,
-      tableName: 'orders_item',
+      tableName: 'guest_orders_item',
     },
   );
   Model.associate = function (models) {
-    this.belongsTo(models.orders, { foreignKey: 'order_id', sourceKey: 'id' });
+    this.belongsTo(models.guest_orders, {
+      foreignKey: 'order_id',
+      sourceKey: 'id',
+    });
   };
 
   return Model;

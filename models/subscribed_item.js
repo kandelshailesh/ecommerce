@@ -32,9 +32,14 @@ module.exports = (sequlize, DataTypes) => {
         allowNull: true,
       },
       status: {
-        type: DataTypes.ENUM,
-        status: ['active', 'cancelled'],
+        type: DataTypes.STRING,
         defaultValue: 'active',
+        validate: {
+          isIn: {
+            args: [['active', 'cancelled']],
+            msg: 'Status must be active or cancelled',
+          },
+        },
       },
     },
     {
@@ -42,6 +47,13 @@ module.exports = (sequlize, DataTypes) => {
       tableName: 'subscribed_item',
     },
   );
+  Model.associate = function (models) {
+    this.belongsTo(models.users, { foreignKey: 'user_id', targetKey: 'id' });
+    this.belongsTo(models.products, {
+      foreignKey: 'product_id',
+      targetKey: 'id',
+    });
+  };
 
   return Model;
 };
