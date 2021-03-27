@@ -1,114 +1,148 @@
-const { users } = require('../models');
-const { too, ReS, ReE } = require('./util');
 
-export const createUser = async (req, res) => {
-  try {
-    const [err, data] = await too(users.create(req.body));
-    if (err) return ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
-    if (data)
-      return ReS(
-        res,
-        { message: 'Users found.', data: data },
-        status_codes_msg.CREATED.code,
-      );
-  } catch (error) {
-    return ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
+const { users} = require("../models");
+const { to, TE, paginate, getSearchQuery, getOrderQuery } = require("../utils");
+const Logger = require("../logger");
+const { STRINGS ,status_codes_msg } = require("../utils/statusCode")
+const bcrypt = require('bcrypt');
+const bcrypt_p = require('bcrypt-promise');
+const parseStrings = require("parse-strings-in-object");
+const omit = require("lodash/omit")
+
+exports.getAllUsers = async (params) => {
+  const parsedParams = parseStrings(params);
+  const { page = 1, limit, search = {}, sort = {} } = parsedParams;
+  Logger.info(parsedParams);
+  const query = omit(parsedParams, ['page', 'limit', 'search', 'sort']);
+  Logger.info(query)
+  const dbQuery = {
+      where: {
+          ...query, //filter by this query
+          // userTypeId:2,
+          ...getSearchQuery(search),
+
+      },
+      // include: [
+      //     { model: order_masters, as:'orders' }
+
+      // ],
+      attributes: ["id","firstName","lastName","email","phone"],
+      ...getOrderQuery(sort),
+      ...paginate(page, limit)
   }
-};
-export const updateUser = async (req, res) => {
-    try {
-        const {id} = req.params;
-        const [err, data] = await too(users.update(req.body,{where:{id:id}}));
-        if (err) return ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
-        if (data)
-          return ReS(
-            res,
-            { message: 'User update successfully', data: data },
-            status_codes_msg.CREATED.code,
-          );
-      } catch (error) {
-        return ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
+
+  // console.log(pick(dbQuery, 'where'))
+  const [err, data] = await to(users.findAndCountAll(dbQuery))
+  if (err) TE(STRINGS.DB_ERROR + err.message);
+  if (!data) TE(STRINGS.NO_DATA)
+  return { users: data.rows, count: data.count }
+}
+
+exports.createUser= async (params) => {
+   //Logger.info(params)
+   let {
+    firstName,
+    lastName,
+    email,
+    phone,
+    password,
+    status,
+   }=params
+   
+    let err,data;
+     [err, data] = await to(users.findOne({where:{phone}}));
+    if(err)TE(err.message);
+    Logger.info(data);
+    if(data)TE("Phone number "+STRINGS.ALREADY_EXIST);
+    [err, data] = await to(users.findOne({where:{email}}));
+    if(err)TE(err.message);
+    Logger.info(data);
+    if(data)TE("Email  "+STRINGS.ALREADY_EXIST);
+     Logger.info(params);
+     [err,data]= await to(
+      users.create(params)
+      );
+      if (err) TE( + err.message);
+      //if (!data) TE(STRINGS.DB_ERROR);
+      return data;
+}
+
+exports.getUserById = async (id) => {
+    Logger.info(id);
+
+    const [err, data] = await to(users.findOne(
+      {
+        where: {
+          id
+        },
+        attributes: ["id","firstName","lastName","email","phone","phoneVerified","language","avatarlocation","status","systemuserId","loginType","account_crearedBy","phoneVerified"]
+      ,include:[{model:system_users,attributes:["id","name"]},{model:enduser_group,attributes:["id","name"]}]
       }
-};
-export const deleteUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const [err, data] = await too(users.destroy({ where: { id: id } }));
-    if (err) ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
-    if (data) {
-      return ReS(
-        res,
-        { message: 'Users deleted successfully', data: [] },
-        status_codes_msg.CREATED.code,
+    ));
+    if (err) TE(STRINGS.DB_ERROR + err.message);
+    if (!data) TE(STRINGS.NO_DATA)
+    return data
+}
+
+exports.editUser = async (params,id,query) => {
+    Logger.info(id);
+
+    let err,data;
+    [err, data] = await to(users.findOne(
+        {
+            where: {
+              id
+            }
+           
+            
+          }
+    ));
+    if (err) TE(STRINGS.DB_ERROR + err.message);
+    if (!data) TE(STRINGS.NO_DATA)
+
+    if(query){
+        if(query.status){
+            data.status= query.status
+            return await data.save()
+        }
+    }
+
+    if(params.password){
+      const pas=await this.passwordEncrypt(params.password);
+      params.password=pas;
+      params.passwordChangedAt=Date.now();
+    }
+
+    [err,data]= await to(
+      users.update(params,
+        {where:{id}})
       );
-    }
-  } catch (error) {
-    return ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
-  }
-};
-const fetchUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const [err, data] = await too(users.findAll();
-    if (err) ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
-    if (data) {
-      return ReS(
-        res,
-        { message: 'Users fetched successfully', data:data },
-        status_codes_msg.CREATED.code,
-      );
-    }
-  } catch (error) {
-    return ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
-  }
-};
+      if (err) TE( + err.message);
+      if (data[0]!==1) TE(STRINGS.DB_ERROR);
 
-const fetchUserByID = async (req, res) => {
-    try {
-      const { id } = req.params;
-      const [err, data] = await too(users.findOne({where:{id:id}});
-      if (err) ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
-      if (data) {
-        return ReS(
-          res,
-          { message: 'Users fetched successfully', data:data },
-          status_codes_msg.CREATED.code,
-        );
-      }
-    } catch (error) {
-      return ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
-    }
-  };
+      [err, data] = await to(users.findOne(
+        {
+            where: {
+              id
+            },
+            attributes: ["firstName","lastName","email","phone","phoneVerified","language","avatarlocation","status","systemuserId","loginType","account_crearedBy","phoneVerified"]
+          ,include:[{model:system_users,attributes:["id","name"]},{model:enduser_group,attributes:["id","name"]}]
+          }
+    ));
+    if (err) TE(STRINGS.DB_ERROR + err.message);
+    if (!data) TE(STRINGS.NO_DATA)
 
- export const Login = async (req, res) => {
-    try {
-      const { email,password } = req.body;
-      let [err, user] = await too(
-        users.findOne({
-            where: [{ email: email }],          
-        
-        })
-    );
-    if (err) TE(err.message);
-    if (!user) TE('User not registered');
-    if (user.status === 'hold') {
-        TE('Your account is hold,contact with your team');
-    }
-    [err, user] = await too(user.comparePassword(password));
-    if (err) TE(err.message);
+      return data;
+}
 
-        return ReS(
-          res,
-          { message: 'Logged in successfully', data:data.toWeb(),token:data.getJWT() },
-          status_codes_msg.CREATED.code,
-        );
+exports.passwordEncrypt = async (password)=>{
+  
     
-    } catch (error) {
-      return ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
-    }
-  };
+    let salt, hash,err
+    [err, salt] = await to(bcrypt.genSalt(10));
+    if (err) TE(err.message, true);
+    console.log(salt);
+    [err, hash] = await to(bcrypt.hash(password, salt));
+    if (err) TE(err.message, true);
 
-
-  export const updatePassword = async(req,res)=>{
-      
-  }
+  return hash
+}

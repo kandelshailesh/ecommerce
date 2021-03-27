@@ -3,7 +3,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const db = require('./models/index');
-
+const  routes=require('./routes')
 app.use(express.json());
 app.use(cors());
 
@@ -17,6 +17,7 @@ const checkConnection = async () => {
   }
 };
 
+app.use('/backend',routes)
 app.listen(process.env.PORT, () => {
   console.log('Listening on port', process.env.PORT);
   checkConnection();
