@@ -2,7 +2,7 @@
 const bcrypt = require('bcrypt');
 const bcrypt_p = require('bcrypt-promise');
 const jwt = require('jsonwebtoken');
-const { TE, too } = require('../services/util');
+const { TE, too } = require('../utils');
 const randtoken = require('rand-token');
 const SequelizeSlugify = require('sequelize-slugify');
 
@@ -66,16 +66,32 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
       },
+      isGuest: {
+        type: DataTypes.BOOLEAN,
+        default: true,
+      },
+      guest_id: {
+        type: DataTypes.STRING(32),
+        default: true,
+      },
       address: {
         type: DataTypes.STRING(255),
       },
       resetPasswordToken: DataTypes.STRING,
       resetPasswordExpiresIn: DataTypes.DATE,
+      slug: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
     },
     { paranoid: true, tableName: 'users' },
   );
   SequelizeSlugify.slugifyModel(Model, {
     source: ['username'],
+  });
+
+  Model.beforeCreate(user => {
+    if (user.isGuest) user.guest_id = uuidv4();
   });
   Model.associate = function (models) {
     this.hasMany(models.orders, { foreignKey: 'user_id', sourceKey: 'id' });

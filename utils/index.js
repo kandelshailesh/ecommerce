@@ -372,3 +372,23 @@ export const getFormattedErrors = validationResult => {
     };
   });
 };
+
+exports.formatValidationError = function (errorArray) {
+    let errorMessage= '';
+    errorArray.forEach((i) => {
+        // const m = i.message.replace(/(\r\n|\n|\r)/gm," ");
+        if (i.property === 'instance') {
+            errorMessage = errorMessage + i.message + '.' + '\n';
+            // const obj = { message: i.message }
+            // errorMessage.push(obj)
+        } else {
+            const a = i.property.split('instance.')[1];
+            errorMessage =
+                errorMessage + ' ' + a + ' ' + i.message + '.' + '\n';
+            // const obj = { path: a, message: i.message }
+            // errorMessage.push(obj)
+        }
+    });
+    Logger.info(errorMessage);
+    return errorMessage;
+};
