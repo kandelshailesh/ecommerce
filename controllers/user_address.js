@@ -1,14 +1,19 @@
 //import system_modules from "../../auth_models/system_modules";
-import { createUnit, deleteUnit, getUnit, updateUnit } from '../services/unit';
+import {
+  createUserAddress,
+  deleteUserAddress,
+  getUserAddress,
+  updateUserAddress,
+} from '../services/users_address';
 
 const { too, ReS, ReE, TE } = require('../services/util');
 const { status_codes_msg } = require('../utils/appStatics');
 
-export const createUnitController = async (req, res) => {
+export const createUserAddressController = async (req, res) => {
   const param = req.body;
 
   try {
-    const [err, newPackage] = await too(createUnit(param));
+    const [err, newPackage] = await too(createUserAddress(param));
     if (err) {
       ReE(res, err, status_codes_msg.FAILED.code);
     }
@@ -16,7 +21,7 @@ export const createUnitController = async (req, res) => {
       ReS(
         res,
         {
-          message: 'NEW UNIT ADDED',
+          message: 'NEW USER ADDRESS ADDED',
           DATA: newPackage,
         },
         status_codes_msg.CREATED.code,
@@ -27,10 +32,10 @@ export const createUnitController = async (req, res) => {
   }
 };
 
-export const getUnitController = async (req, res) => {
+export const getUserAddressController = async (req, res) => {
   const param = req.query;
   try {
-    const [err, packageByKey] = await too(getUnit(param));
+    const [err, packageByKey] = await too(getUserAddress(param));
 
     if (err) {
       return ReE(res, err, status_codes_msg.FAILED.code);
@@ -40,8 +45,7 @@ export const getUnitController = async (req, res) => {
         res,
         {
           message: `FETCH SUCCESSFULLY`,
-          DATA: packageByKey.rows,
-          count: packageByKey.count,
+          DATA: packageByKey,
         },
         status_codes_msg.SUCCESS.code,
       );
@@ -51,11 +55,11 @@ export const getUnitController = async (req, res) => {
   }
 };
 
-export const updateUnitController = async (req, res) => {
+export const updateUserAddressController = async (req, res) => {
   const body = req.body;
-  const { id } = req.params;
+  const { id } = req.query;
   try {
-    const [err, updatedPackage] = await too(updateUnit(body, id));
+    const [err, updatedPackage] = await too(updateUserAddress(body, id));
     console.log(updatedPackage);
 
     if (err) {
@@ -76,10 +80,10 @@ export const updateUnitController = async (req, res) => {
   }
 };
 
-export const deleteUnitController = async (req, res) => {
+export const deleteUserAddressController = async (req, res) => {
   const { id } = req.params;
   try {
-    const [err, deletedPackage] = await too(deleteUnit(id));
+    const [err, deletedPackage] = await too(deleteUserAddress(id));
 
     if (err) {
       return ReE(res, err, status_codes_msg.FAILED.code);
@@ -88,7 +92,7 @@ export const deleteUnitController = async (req, res) => {
       return ReS(
         res,
         {
-          message: `UNIT DELETED`,
+          message: `USER ADDRESS DELETED`,
           DATA: deletedPackage,
         },
         status_codes_msg.SUCCESS.code,

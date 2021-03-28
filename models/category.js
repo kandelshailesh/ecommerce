@@ -26,7 +26,7 @@ module.exports = (sequlize, DataTypes) => {
       status: {
         type: DataTypes.ENUM,
         values: ['active', 'hold'],
-        defaulValue: 'active',
+        default: 'active',
       },
       slug: {
         type: DataTypes.STRING(255),

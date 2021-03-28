@@ -7,7 +7,9 @@ const {
   guest_orders,
   guest_orders_item,
 } = require('../models');
-const { too, ReS, ReE } = require('./util');
+const { too, ReS, ReE, TE, paginate } = require('./util');
+
+const omit = require('lodash/omit');
 
 export const createOrder = async param => {
   try {
@@ -45,7 +47,7 @@ export const createOrder = async param => {
   }
 };
 
-export const getOrder = async (req, res) => {
+export const getOrder = async param => {
   let page, limit;
   page = parseInt(param['page']);
   limit = parseInt(param['limit']);

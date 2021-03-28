@@ -1,10 +1,12 @@
 const { users_address, products } = require('../models');
-const { too, ReS, ReE } = require('./util');
+const { too, ReS, ReE, TE, paginate } = require('./util');
 
-export const createAddress = async (req, res) => {
+const omit = require('lodash/omit');
+
+export const createAddress = async param => {
   try {
     const [err, data] = await too(users_address.create(req.body));
-    if (err) return ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
+    if (err) TE(error.message);
     if (data)
       return ReS(
         res,
@@ -12,11 +14,11 @@ export const createAddress = async (req, res) => {
         status_codes_msg.CREATED.code,
       );
   } catch (error) {
-    return ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
+    TE(error.message);
   }
 };
 
-export const getAddress = async (req, res) => {
+export const getAddress = async param => {
   let page, limit;
   page = parseInt(param['page']);
   limit = parseInt(param['limit']);

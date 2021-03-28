@@ -131,23 +131,22 @@ exports.passwordEncrypt = async password => {
   console.log(salt);
   [err, hash] = await to(bcrypt.hash(password, salt));
   if (err) TE(err.message, true);
-
-  export const updatePassword = async (req, res) => {};
-
-  export const createGuestUser = async (req, res) => {
-    try {
-      let [err, user] = await too(users.create({ isGuest: true }));
-      if (err) TE(err.message);
-      if (!user) TE('User not registered');
-      if (err) TE(err.message);
-      return ReS(
-        res,
-        { message: 'Guest user created successfully', data: data.toWeb() },
-        status_codes_msg.CREATED.code,
-      );
-    } catch (error) {
-      return ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
-    }
-  };
   return hash;
+};
+export const updatePassword = async param => {};
+
+export const createGuestUser = async param => {
+  try {
+    let [err, user] = await too(users.create({ isGuest: true }));
+    if (err) TE(err.message);
+    if (!user) TE('User not registered');
+    if (err) TE(err.message);
+    return ReS(
+      res,
+      { message: 'Guest user created successfully', data: data.toWeb() },
+      status_codes_msg.CREATED.code,
+    );
+  } catch (error) {
+    TE(error.message);
+  }
 };

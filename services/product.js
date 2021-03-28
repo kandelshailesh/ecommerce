@@ -1,9 +1,11 @@
-const { products } = require('../models');
-const { too, ReS, ReE } = require('./util');
+const { products, category } = require('../models');
+const { too, ReS, ReE, TE, paginate } = require('./util');
 
-export const createProduct = async (req, res) => {
+const omit = require('lodash/omit');
+
+export const createProduct = async param => {
   try {
-    const [err, data] = await too(products.create(req.body));
+    const [err, data] = await too(products.create(param));
     if (err) TE(err.message);
     if (data) return data;
   } catch (error) {
@@ -11,7 +13,7 @@ export const createProduct = async (req, res) => {
   }
 };
 
-export const getProduct = async (req, res) => {
+export const getProduct = async param => {
   let page, limit;
   page = parseInt(param['page']);
   limit = parseInt(param['limit']);
@@ -23,6 +25,7 @@ export const getProduct = async (req, res) => {
       products.findAndCountAll({
         where: Object.keys(query).length > 0 ? query : '',
         ...paginate(page, limit),
+        include: [{ model: category }],
       }),
     );
     if (err) TE(err.message);
@@ -40,7 +43,10 @@ export const updateProduct = async (param, id) => {
     );
     if (err) TE(err.message);
     if (!data) TE('Product ID not found');
-    return data;
+    const [err1, data1] = await too(products.findOne({ where: { id: id } }));
+    if (err1) TE(err1.message);
+    if (!data1) TE('SOMETHING WENT WRONG WHILE FETCHING');
+    return data1;
   } catch (error) {
     TE(error.message);
   }
@@ -48,7 +54,9 @@ export const updateProduct = async (param, id) => {
 
 export const deleteProduct = async id => {
   try {
-    const [err, data] = await too(products.destroy({ where: { id: id } }));
+    const [err, data] = await too(
+      products.destroy({ where: { id: id }, include: [{ model: category }] }),
+    );
     if (err) TE(err.message);
     if (!data) TE('Product ID not found');
     return data;

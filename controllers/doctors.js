@@ -1,14 +1,25 @@
 //import system_modules from "../../auth_models/system_modules";
-import { createUnit, deleteUnit, getUnit, updateUnit } from '../services/unit';
+import {
+  createDoctor,
+  deleteDoctor,
+  getDoctor,
+  updateDoctor,
+} from '../services/doctors';
 
 const { too, ReS, ReE, TE } = require('../services/util');
 const { status_codes_msg } = require('../utils/appStatics');
 
-export const createUnitController = async (req, res) => {
+export const createDoctorController = async (req, res) => {
   const param = req.body;
+  if (req.files) {
+    param.image = req.files['image'] ? req.files['image'][0].path : null;
+  }
+  if (!param.status) {
+    param.status = 'active';
+  }
 
   try {
-    const [err, newPackage] = await too(createUnit(param));
+    const [err, newPackage] = await too(createDoctor(param));
     if (err) {
       ReE(res, err, status_codes_msg.FAILED.code);
     }
@@ -16,7 +27,7 @@ export const createUnitController = async (req, res) => {
       ReS(
         res,
         {
-          message: 'NEW UNIT ADDED',
+          message: 'NEW DOCTOR ADDED',
           DATA: newPackage,
         },
         status_codes_msg.CREATED.code,
@@ -27,10 +38,10 @@ export const createUnitController = async (req, res) => {
   }
 };
 
-export const getUnitController = async (req, res) => {
+export const getDoctorController = async (req, res) => {
   const param = req.query;
   try {
-    const [err, packageByKey] = await too(getUnit(param));
+    const [err, packageByKey] = await too(getDoctor(param));
 
     if (err) {
       return ReE(res, err, status_codes_msg.FAILED.code);
@@ -51,13 +62,16 @@ export const getUnitController = async (req, res) => {
   }
 };
 
-export const updateUnitController = async (req, res) => {
-  const body = req.body;
+export const updateDoctorController = async (req, res) => {
+  const params = req.body;
   const { id } = req.params;
-  try {
-    const [err, updatedPackage] = await too(updateUnit(body, id));
-    console.log(updatedPackage);
 
+  if (req.files) {
+    params.image = req.files['image'] ? req.files['image'][0].path : null;
+  }
+
+  try {
+    const [err, updatedPackage] = await too(updateDoctor(params, id));
     if (err) {
       return ReE(res, err, status_codes_msg.FAILED.code);
     }
@@ -76,10 +90,10 @@ export const updateUnitController = async (req, res) => {
   }
 };
 
-export const deleteUnitController = async (req, res) => {
+export const deleteDoctorController = async (req, res) => {
   const { id } = req.params;
   try {
-    const [err, deletedPackage] = await too(deleteUnit(id));
+    const [err, deletedPackage] = await too(deleteDoctor(id));
 
     if (err) {
       return ReE(res, err, status_codes_msg.FAILED.code);
@@ -88,7 +102,7 @@ export const deleteUnitController = async (req, res) => {
       return ReS(
         res,
         {
-          message: `UNIT DELETED`,
+          message: `DOCTOR DELETED`,
           DATA: deletedPackage,
         },
         status_codes_msg.SUCCESS.code,

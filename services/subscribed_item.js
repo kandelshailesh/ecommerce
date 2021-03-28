@@ -1,17 +1,19 @@
 const { subscribed_item, products } = require('../models');
-const { too, ReS, ReE } = require('./util');
+const { too, ReS, ReE, TE, paginate } = require('./util');
 
-export const createSubscribedItem = async (req, res) => {
+const omit = require('lodash/omit');
+
+export const createSubscribedItem = async param => {
   try {
     const [err, data] = await too(subscribed_item.create(req.body));
-    if (err) return ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
+    if (err) TE(error.message);
     if (data) return data;
   } catch (error) {
     TE(error.message);
   }
 };
 
-export const getSubscribedItem = async (req, res) => {
+export const getSubscribedItem = async param => {
   let page, limit;
   page = parseInt(param['page']);
   limit = parseInt(param['limit']);

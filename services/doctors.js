@@ -1,9 +1,11 @@
 const { doctors } = require('../models');
-const { too, ReS, ReE } = require('./util');
+const { too, ReS, ReE, TE, paginate } = require('./util');
 
-export const createDoctor = async (req, res) => {
+const omit = require('lodash/omit');
+
+export const createDoctor = async param => {
   try {
-    const [err, data] = await too(doctors.create(req.body));
+    const [err, data] = await too(doctors.create(param));
     if (err) TE(err.message);
     if (data) return data;
   } catch (error) {
@@ -11,7 +13,7 @@ export const createDoctor = async (req, res) => {
   }
 };
 
-export const getDoctor = async (req, res) => {
+export const getDoctor = async param => {
   let page, limit;
   page = parseInt(param['page']);
   limit = parseInt(param['limit']);
@@ -38,13 +40,17 @@ export const updateDoctor = async (param, id) => {
     const [err, data] = await too(doctors.update(param, { where: { id: id } }));
     if (err) TE(err.message);
     if (!data) TE('SOMETHING WENT WRONG WHILE UPDATING');
-    return data;
+    console.log(data);
+    const [err1, data1] = await too(doctors.findOne({ where: { id: id } }));
+    if (err1) TE(err1.message);
+    if (!data1) TE('SOMETHING WENT WRONG WHILE FETCHING');
+    return data1;
   } catch (error) {
     TE(error.message);
   }
 };
 
-export const deleteDoctor = async (param, id) => {
+export const deleteDoctor = async id => {
   try {
     const [err, data] = await too(doctors.destroy({ where: { id: id } }));
     if (err) TE(err.message);

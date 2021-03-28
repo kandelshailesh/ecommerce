@@ -6,8 +6,9 @@ import {
   updateCategory,
 } from '../services/category';
 
-const { too, ReS, ReE } = require('../../services/util.service');
-const { status_codes_msg } = require('../../utils/appStatics');
+const { too, ReS, ReE, TE } = require('../services/util');
+const { status_codes_msg } = require('../utils/appStatics');
+const Logger = require('../logger');
 
 export const createCategoryController = async (req, res) => {
   const param = req.body;
@@ -15,7 +16,6 @@ export const createCategoryController = async (req, res) => {
   try {
     const [err, newPackage] = await too(createCategory(param));
     if (err) {
-      Logger.info(err);
       ReE(res, err, status_codes_msg.FAILED.code);
     }
     if (newPackage) {
@@ -39,7 +39,6 @@ export const getCategoryController = async (req, res) => {
     const [err, packageByKey] = await too(getCategory(param));
 
     if (err) {
-      Logger.info(err);
       return ReE(res, err, status_codes_msg.FAILED.code);
     }
     if (packageByKey) {
@@ -47,7 +46,9 @@ export const getCategoryController = async (req, res) => {
         res,
         {
           message: `FETCH SUCCESSFULLY`,
-          DATA: packageByKey,
+          DATA: packageByKey.rows,
+
+          count: packageByKey.count,
         },
         status_codes_msg.SUCCESS.code,
       );
@@ -59,13 +60,12 @@ export const getCategoryController = async (req, res) => {
 
 export const updateCategoryController = async (req, res) => {
   const body = req.body;
-  const { id } = req.query;
+  const { id } = req.params;
   try {
     const [err, updatedPackage] = await too(updateCategory(body, id));
     console.log(updatedPackage);
 
     if (err) {
-      Logger.info(err);
       return ReE(res, err, status_codes_msg.FAILED.code);
     }
     if (updatedPackage) {
@@ -89,7 +89,6 @@ export const deleteCategoryController = async (req, res) => {
     const [err, deletedPackage] = await too(deleteCategory(id));
 
     if (err) {
-      Logger.info(err);
       return ReE(res, err, status_codes_msg.FAILED.code);
     }
     if (deletedPackage) {
@@ -106,4 +105,3 @@ export const deleteCategoryController = async (req, res) => {
     return ReE(res, error, status_codes_msg.FAILED.code);
   }
 };
-

@@ -62,6 +62,10 @@ module.exports = (sequlize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
+      unit_id: {
+        type: DataTypes.INTEGER(11),
+        allowNull: false,
+      },
     },
     {
       paranoid: true,
@@ -72,6 +76,14 @@ module.exports = (sequlize, DataTypes) => {
   SequelizeSlugify.slugifyModel(Model, {
     source: ['name'],
   });
+
+  Model.associate = function (model) {
+    this.belongsTo(model.unit, { foreignKey: 'unit_id', targetKey: 'id' });
+    this.belongsTo(model.category, {
+      foreignKey: 'category_id',
+      targetKey: 'id',
+    });
+  };
 
   return Model;
 };

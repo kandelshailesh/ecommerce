@@ -1,9 +1,11 @@
-const { units } = require('../models');
-const { too, ReS, ReE } = require('./util');
+const { unit } = require('../models');
+const { too, ReS, ReE, TE, paginate } = require('./util');
 
-export const createUnit = async (req, res) => {
+const omit = require('lodash/omit');
+
+export const createUnit = async param => {
   try {
-    const [err, data] = await too(units.create(req.body));
+    const [err, data] = await too(unit.create(param));
     if (err) TE(err.message);
     if (data) return data;
   } catch (error) {
@@ -11,7 +13,7 @@ export const createUnit = async (req, res) => {
   }
 };
 
-export const getUnit = async (req, res) => {
+export const getUnit = async param => {
   let page, limit;
   page = parseInt(param['page']);
   limit = parseInt(param['limit']);
@@ -20,7 +22,7 @@ export const getUnit = async (req, res) => {
   const query = omit(param, ['page', 'limit']);
   try {
     const [err, allModules] = await too(
-      units.findAndCountAll({
+      unit.findAndCountAll({
         where: Object.keys(query).length > 0 ? query : '',
         ...paginate(page, limit),
       }),
@@ -35,18 +37,21 @@ export const getUnit = async (req, res) => {
 
 export const updateUnit = async (param, id) => {
   try {
-    const [err, data] = await too(units.update(param, { where: { id: id } }));
+    const [err, data] = await too(unit.update(param, { where: { id: id } }));
     if (err) TE(err.message);
     if (!data) TE('SOMETHING WENT WRONG WHILE UPDATING');
-    return data;
+    const [err1, data1] = await too(unit.findOne({ where: { id: id } }));
+    if (err1) TE(err1.message);
+    if (!data1) TE('SOMETHING WENT WRONG WHILE FETCHING');
+    return data1;
   } catch (error) {
     TE(error.message);
   }
 };
 
-export const deleteUnit = async (param, id) => {
+export const deleteUnit = async id => {
   try {
-    const [err, data] = await too(units.destroy({ where: { id: id } }));
+    const [err, data] = await too(unit.destroy({ where: { id: id } }));
     if (err) TE(err.message);
     if (!data) TE('SOMETHING WENT WRONG WHILE DELETING');
     return data;

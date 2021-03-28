@@ -8,6 +8,8 @@ const MIME_TYPE_MAP = {
   'application/pdf': 'pdf',
 };
 
+const Logger = require('../logger');
+
 const getStorage = (location = null) =>
   multer.diskStorage({
     destination: (req, file, cb) => {

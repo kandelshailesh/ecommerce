@@ -13,7 +13,6 @@ module.exports = (sequlize, DataTypes) => {
       name: {
         type: DataTypes.STRING(255),
         allowNull: false,
-        unique: true,
       },
       hospital: {
         type: DataTypes.STRING,

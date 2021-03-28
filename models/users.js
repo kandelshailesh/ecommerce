@@ -68,7 +68,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       isGuest: {
         type: DataTypes.BOOLEAN,
-        default: true,
+        default: false,
       },
       guest_id: {
         type: DataTypes.STRING(32),
