@@ -2,7 +2,7 @@ const SequelizeSlugify = require('sequelize-slugify');
 
 module.exports = (sequlize, DataTypes) => {
   let Model = sequlize.define(
-    'user_address',
+    'users_address',
     {
       id: {
         type: DataTypes.INTEGER(11),
@@ -30,7 +30,7 @@ module.exports = (sequlize, DataTypes) => {
     },
     {
       paranoid: true,
-      tableName: 'user_address',
+      tableName: 'users_address',
     },
   );
 

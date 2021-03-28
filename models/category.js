@@ -19,10 +19,10 @@ module.exports = (sequlize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: true,
       },
-      image: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-      },
+      // image: {
+      //   type: DataTypes.TEXT,
+      //   allowNull: true,
+      // },
       status: {
         type: DataTypes.ENUM,
         values: ['active', 'hold'],

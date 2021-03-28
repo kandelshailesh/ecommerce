@@ -58,6 +58,10 @@ module.exports = (sequlize, DataTypes) => {
         type: DataTypes.DOUBLE(11),
         defaultValue: 0,
       },
+      isSubscribable: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+      },
     },
     {
       paranoid: true,
