@@ -1,5 +1,5 @@
 const { users } = require('../models');
-const { too, ReS, ReE } = require('../utils');
+const { too,TE, ReS, ReE } = require('../utils');
 const { status_codes_msg, STRINGS } = require('../utils/statusCode.js');
 const UserService = require('../services/users');
 const { Op } = require('sequelize');
@@ -31,6 +31,9 @@ export const createUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
+    if (req.files) {
+      req.body.image = req.files['image'] ? req.files['image'][0].path : null;
+    }
     const [err, data] = await too(
       users.update(req.body, { where: { id: id } }),
     );
@@ -88,7 +91,7 @@ export const fetchUserByID = async (req, res) => {
     if (data) {
       return ReS(
         res,
-        { message: 'Users fetched successfully', data: data },
+        { message: 'Users fetched successfully', data: data.toWeb() },
         status_codes_msg.CREATED.code,
       );
     }

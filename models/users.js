@@ -62,7 +62,7 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.BOOLEAN,
         default: false,
       },
-      profile_image: {
+      image: {
         type: DataTypes.TEXT,
         allowNull: true,
       },

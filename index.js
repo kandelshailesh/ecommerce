@@ -13,6 +13,7 @@ app.use(express.json());
 app.use(cors());
 app.use(express.urlencoded({ extended: false }));
 app.use(logger('dev'));
+app.use("/uploads", express.static("uploads"));
 const { status_codes_msg } = require('./utils/appStatics');
 
 const checkConnection = async () => {

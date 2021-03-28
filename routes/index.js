@@ -3,7 +3,7 @@ const app = express();
 const { upload } = require('../middlewares/upload');
 const productUpload = upload('products').fields([{ name: 'image' }]);
 const doctorUpload = upload('doctors').fields([{ name: 'image' }]);
-const userUpload = upload('doctors').fields([{ name: 'image' }]);
+const userUpload = upload('users').fields([{ name: 'image' }]);
 
 const categoryController = require('../controllers/category');
 const productController = require('../controllers/products');
@@ -18,9 +18,9 @@ const {} = require('../controllers/index');
 app.post('/user/signup', userUpload, userController.createUser);
 app.post('/user/login', userController.Login);
 app.get('/users', userController.fetchUsers);
-app.get('/user/:id', userController.fetchUserByID);
-app.patch('/user/:id', userController.updateUser);
-app.delete('/user/:id', userController.deleteUser);
+app.get('/users/:id', userController.fetchUserByID);
+app.patch('/users/:id',userUpload, userController.updateUser);
+app.delete('/users/:id', userController.deleteUser);
 
 app.post('/category', categoryController.createCategoryController);
 app.get('/category', categoryController.getCategoryController);
@@ -46,7 +46,7 @@ app.get('/doctor', doctorController.getDoctorController);
 app.patch('/doctor/:id', doctorUpload, doctorController.updateDoctorController);
 app.delete('/doctor/:id', doctorController.deleteDoctorController);
 
-app.post('/user', userAddressController.createUserAddressController);
+app.post('/user/address', userAddressController.createUserAddressController);
 app.get('/user/address', userAddressController.getUserAddressController);
 app.patch(
   '/user/address/:id',
