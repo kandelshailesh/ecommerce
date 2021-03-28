@@ -5,6 +5,7 @@ const cors = require('cors');
 const db = require('./models/index');
 const multer = require('multer');
 
+const routes = require('./routes');
 app.use(express.json());
 app.use(cors());
 
@@ -18,6 +19,7 @@ const checkConnection = async () => {
   }
 };
 
+app.use('/backend', routes);
 app.listen(process.env.PORT, () => {
   console.log('Listening on port', process.env.PORT);
   checkConnection();

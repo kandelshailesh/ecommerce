@@ -2,7 +2,7 @@
 const bcrypt = require('bcrypt');
 const bcrypt_p = require('bcrypt-promise');
 const jwt = require('jsonwebtoken');
-const { TE, too } = require('../services/util');
+const { TE, too } = require('../utils');
 const randtoken = require('rand-token');
 const SequelizeSlugify = require('sequelize-slugify');
 
