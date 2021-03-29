@@ -4,7 +4,6 @@ const {
   orders,
   guest_orders,
   orders_item,
-  guest_orders,
   guest_orders_item,
 } = require('../models');
 const { too, ReS, ReE, TE, paginate } = require('./util');
@@ -38,7 +37,7 @@ export const createOrder = async param => {
         }),
       );
       if (err3) TE('Error in deleteing order item');
-      [(err2, data2)] = await too(orders_item.bulkCreate(result()), {
+      [err2, data2] = await too(orders_item.bulkCreate(result()), {
         updateOnDuplicate: ['id'],
       });
     }

@@ -15,7 +15,7 @@ const userController = require('../controllers/user');
 
 const {} = require('../controllers/index');
 
-app.post('/user/signup', userUpload, userController.createUser);
+app.post('/users', userUpload, userController.createUser);
 app.post('/user/login', userController.Login);
 app.get('/users', userController.fetchUsers);
 app.get('/users/:id', userController.fetchUserByID);
@@ -27,39 +27,39 @@ app.get('/category', categoryController.getCategoryController);
 app.patch('/category/:id', categoryController.updateCategoryController);
 app.delete('/category/:id', categoryController.deleteCategoryController);
 
-app.post('/product', productUpload, productController.createProductController);
-app.get('/product', productController.getProductController);
+app.post('/products', productUpload, productController.createProductController);
+app.get('/products', productController.getProductController);
 app.patch(
-  '/product/:id',
+  '/products/:id',
   productUpload,
   productController.updateProductController,
 );
-app.delete('/product/:id', productController.deleteProductController);
+app.delete('/products/:id', productController.deleteProductController);
 
 app.post('/unit', unitController.createUnitController);
 app.get('/unit', unitController.getUnitController);
 app.patch('/unit/:id', unitController.updateUnitController);
 app.delete('/unit/:id', unitController.deleteUnitController);
 
-app.post('/doctor', doctorUpload, doctorController.createDoctorController);
-app.get('/doctor', doctorController.getDoctorController);
-app.patch('/doctor/:id', doctorUpload, doctorController.updateDoctorController);
+app.post('/doctors', doctorUpload, doctorController.createDoctorController);
+app.get('/doctors', doctorController.getDoctorController);
+app.patch('/doctors/:id', doctorUpload, doctorController.updateDoctorController);
 app.delete('/doctor/:id', doctorController.deleteDoctorController);
 
-app.post('/user/address', userAddressController.createUserAddressController);
-app.get('/user/address', userAddressController.getUserAddressController);
+app.post('/users/address', userAddressController.createUserAddressController);
+app.get('/users/address', userAddressController.getUserAddressController);
 app.patch(
-  '/user/address/:id',
+  '/users/address/:id',
   userAddressController.updateUserAddressController,
 );
 app.delete(
-  '/user/addresssss/:id',
+  '/users/addresssss/:id',
   userAddressController.deleteUserAddressController,
 );
 
-app.post('/order', orderController.createOrderController);
-app.get('/order', orderController.getOrderController);
-app.patch('/order/:id', orderController.updateOrderController);
-app.delete('/order/:id', orderController.deleteOrderController);
+app.post('/orders', orderController.createOrderController);
+app.get('/orders', orderController.getOrderController);
+app.patch('/orders/:id', orderController.updateOrderController);
+app.delete('/orders/:id', orderController.deleteOrderController);
 
 module.exports = app;

@@ -4,7 +4,7 @@ import {
   deleteOrder,
   getOrder,
   updateOrder,
-} from '../services/category';
+} from '../services/order';
 
 const { too, ReS, ReE, TE } = require('../services/util');
 const { status_codes_msg } = require('../utils/appStatics');
