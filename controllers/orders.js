@@ -45,7 +45,7 @@ export const getOrderController = async (req, res) => {
         res,
         {
           message: `FETCH SUCCESSFULLY`,
-          DATA: packageByKey,
+          DATA: packageByKey?.rows,
         },
         status_codes_msg.SUCCESS.code,
       );

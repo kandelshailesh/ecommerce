@@ -58,11 +58,11 @@ export const getOrder = async param => {
       orders.findAndCountAll({
         where: Object.keys(query).length > 0 ? query : '',
         ...paginate(page, limit),
-        include: [
-          param['order_item'] === 'true'
-            ? { model: orders_item, include: [{ model: products }] }
-            : '',
-        ],
+        // include: [
+        //   param['order_item'] === 'true'
+        //     ? { model: orders_item, include: [{ model: products }] }
+        //     : '',
+        // ],
       }),
     );
     if (err) TE(err.message);
