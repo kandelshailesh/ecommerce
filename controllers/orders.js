@@ -11,9 +11,15 @@ const { status_codes_msg } = require('../utils/appStatics');
 
 export const createOrderController = async (req, res) => {
   const param = req.body;
-
+  console.log("params",param,req.files)
+  if (req.files) {
+    param.image = req.files['image'] ? req.files['image'][0].path : null;
+  }
+ 
+  console.log("params2",param?.order_item,param.image)
   try {
     const [err, newPackage] = await too(createOrder(param));
+    console.log("DARA Return",err,newPackage)
     if (err) {
       ReE(res, err, status_codes_msg.FAILED.code);
     }

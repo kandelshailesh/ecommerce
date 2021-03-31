@@ -7,11 +7,13 @@ const db = require('./models/index');
 const multer = require('multer');
 const routes = require('./routes');
 const pe = require('parse-error');
+const bodyParser= require('body-parser');
+
 const { ReE, to, TE } = require('./services/util');
 
-app.use(express.json());
+app.use(bodyParser.json());
 app.use(cors());
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit: 50000 }));
 app.use(logger('dev'));
 app.use("/uploads", express.static("uploads"));
 const { status_codes_msg } = require('./utils/appStatics');

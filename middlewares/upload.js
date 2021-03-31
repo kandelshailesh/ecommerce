@@ -45,7 +45,7 @@ const filter = (mimetypes, file, cb) => {
 
 const upload = (location, type = null) =>
   multer({
-    storage: getStorage(location),
+    storage: getStorage(location), limits: { fileSize: 100000000000 } ,
     fileFilter: (req, file, cb) => {
       console.log(file.mimetype);
       if (type === 'excel') {

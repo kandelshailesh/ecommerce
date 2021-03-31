@@ -29,7 +29,8 @@ module.exports = (sequlize, DataTypes) => {
     },
   );
   Model.associate = function (models) {
-    this.belongsTo(models.orders, { foreignKey: 'order_id', sourceKey: 'id' });
+    this.belongsTo(models.orders, { foreignKey: 'order_id', targetKey: 'id' });
+    this.belongsTo(models.products, { foreignKey: 'product_id', targetKey: 'id' });
   };
 
   return Model;

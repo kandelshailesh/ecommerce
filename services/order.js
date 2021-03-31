@@ -12,35 +12,51 @@ const omit = require('lodash/omit');
 
 export const createOrder = async param => {
   try {
-    let err, data, err2, data2, err1, data1;
-    const result = () =>
-      Promise.all(
-        param['order_item'].map((item, i) => ({
-          ...item,
-          order_id: data1.id,
-        })),
-      );
+    let err, data, err2, data2, err1, err4,data4,data1;
+   
     [err1, data1] = await too(
-      orders.findByOne({
-        where: { user_id: param['user_id'], status: 'pending' },
+      orders.findOne({
+        where: { user_id: param['user_id']},
       }),
     );
+
+    const result = () =>
+    Promise.all(
+      param['order_item']?.map((item, i) => ({
+        ...item,
+        order_id: data1?.id,
+      })),
+    );
+    console.log("data1",data1 )
     if (err1) TE(err1.message);
     if (!data1) {
       [err, data] = await too(orders.create(param));
+      console.log("data",data
+      )
       if (err) return TE(err.message);
-      [err2, data2] = await too(orders_item.bulkCreate(result()));
+      [err2, data2] = await too(orders_item.bulkCreate(await result()));
+      console.log("data2",data2)
     } else {
       const [err3, data3] = await too(
         orders_item.destroy({
-          where: { id: param['deleted_item'] ? param['deleted_item'] : '' },
+          where: { id: param['deleted_item'] ? param['deleted_item'] : 0 },
         }),
       );
+      console.log("data1lse",data3
+      )
       if (err3) TE('Error in deleteing order item');
-      [err2, data2] = await too(orders_item.bulkCreate(result()), {
-        updateOnDuplicate: ['id'],
+      [err4, data4] = await too(orders.update(param,{
+        where:{id:data1.id}
+      }));
+      if (err4) TE('Error in while updating image');
+      [err2, data2] = await too(orders_item.bulkCreate(await result()), {
+        updateOnDuplicate: ['product_id'],
       });
+      console.log("data2 else",data2 ,await result())
+
     }
+    return data1
+
   } catch (error) {
     TE(error.message);
   }
@@ -58,11 +74,9 @@ export const getOrder = async param => {
       orders.findAndCountAll({
         where: Object.keys(query).length > 0 ? query : '',
         ...paginate(page, limit),
-        // include: [
-        //   param['order_item'] === 'true'
-        //     ? { model: orders_item, include: [{ model: products }] }
-        //     : '',
-        // ],
+        include: [
+          { model: orders_item, include: [{ model: products }] }
+        ],
       }),
     );
     if (err) TE(err.message);
@@ -124,7 +138,13 @@ export const deleteOrder = async id => {
         where: { id: id },
       }),
     );
+    const [err2, data2] = await too(
+      orders_item.destroy({
+        where: { order_id: id },
+      }),
+    );
     if (err) TE(err.message);
+    if (err2) TE(err2.message);
     if (!data) TE('Order ID not found');
     if (data) return data;
   } catch (error) {

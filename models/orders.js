@@ -66,6 +66,10 @@ module.exports = (sequlize, DataTypes) => {
         type: DataTypes.TEXT,
         allowNull: true,
       },
+      image: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
     },
     {
       paranoid: true,
@@ -75,7 +79,9 @@ module.exports = (sequlize, DataTypes) => {
 
   Model.associate = function (models) {
     this.belongsTo(models.users, { foreignKey: 'user_id', targetKey: 'id' });
+    this.hasMany(models.orders_item, { foreignKey: 'order_id', sourceKey: 'id' });
   };
 
+  
   return Model;
 };

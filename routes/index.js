@@ -4,6 +4,7 @@ const { upload } = require('../middlewares/upload');
 const productUpload = upload('products').fields([{ name: 'image' }]);
 const doctorUpload = upload('doctors').fields([{ name: 'image' }]);
 const userUpload = upload('users').fields([{ name: 'image' }]);
+const orderUpload = upload('orders').fields([{ name: 'image' }]);
 
 const categoryController = require('../controllers/category');
 const productController = require('../controllers/products');
@@ -57,7 +58,7 @@ app.delete(
   userAddressController.deleteUserAddressController,
 );
 
-app.post('/orders', orderController.createOrderController);
+app.post('/orders',orderUpload, orderController.createOrderController);
 app.get('/orders', orderController.getOrderController);
 app.patch('/orders/:id', orderController.updateOrderController);
 app.delete('/orders/:id', orderController.deleteOrderController);
