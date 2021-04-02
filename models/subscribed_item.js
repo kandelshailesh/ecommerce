@@ -11,12 +11,12 @@ module.exports = (sequlize, DataTypes) => {
         autoIncrement: true,
       },
       user_id: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.INTEGER(11),
         allowNull: false,
         unique: true,
       },
       product_id: {
-        type: DataTypes.TEXT,
+        type: DataTypes.INTEGER(11),
         allowNull: true,
       },
       subscribed_date: {

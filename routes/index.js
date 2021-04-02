@@ -14,6 +14,7 @@ const doctorController = require('../controllers/doctors');
 const userAddressController = require('../controllers/user_address');
 const orderController = require('../controllers/orders');
 const userController = require('../controllers/user');
+const subscriberController = require('../controllers/subscribed_item');
 
 const {} = require('../controllers/index');
 
@@ -64,5 +65,12 @@ app.post('/orders',orderUpload, orderController.createOrderController);
 app.get('/orders', orderController.getOrderController);
 app.patch('/orders/:id',orderUpload, orderController.updateOrderController);
 app.delete('/orders/:id', orderController.deleteOrderController);
+
+app.post('/subscriber', subscriberController.createSubscriber);
+app.get('/subscriber', subscriberController.getSubscriber);
+app.patch('/subscriber/:id',subscriberController.updateSubscriber);
+app.delete('/subscriber/:id', subscriberController.deleteSubscriber);
+
+ 
 
 module.exports = app;

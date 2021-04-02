@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const { TE, too } = require('../utils');
 const randtoken = require('rand-token');
 const SequelizeSlugify = require('sequelize-slugify');
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = function (sequelize, DataTypes) {
   var Model = sequelize.define(

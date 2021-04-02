@@ -14,7 +14,7 @@ module.exports = (sequlize, DataTypes) => {
         type: DataTypes.STRING(255),
       },
       product_id: {
-        type: DataTypes.TEXT,
+        type: DataTypes.INTEGER(11),
       },
       quantity: {
         type: DataTypes.INTEGER(11),
