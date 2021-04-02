@@ -16,7 +16,7 @@ export const createOrderController = async (req, res) => {
     param.image = req.files['image'] ? req.files['image'][0].path : null;
   }
  
-  console.log("params2",param?.order_item,param.image)
+  // console.log("params2",param?.order_item,param.image)
   try {
     const [err, newPackage] = await too(createOrder(param));
     console.log("DARA Return",err,newPackage)
@@ -64,6 +64,9 @@ export const getOrderController = async (req, res) => {
 export const updateOrderController = async (req, res) => {
   const body = req.body;
   const { id } = req.query;
+  if (req.files) {
+    body.image = req.files['image'] ? req.files['image'][0].path : null;
+  }
   try {
     const [err, updatedPackage] = await too(updateOrder(body, id));
     console.log(updatedPackage);

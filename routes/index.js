@@ -1,11 +1,12 @@
 const express = require('express');
 const app = express();
 const { upload } = require('../middlewares/upload');
+const passport = require('passport');
+require('../middlewares/passport')(passport);
 const productUpload = upload('products').fields([{ name: 'image' }]);
 const doctorUpload = upload('doctors').fields([{ name: 'image' }]);
 const userUpload = upload('users').fields([{ name: 'image' }]);
 const orderUpload = upload('orders').fields([{ name: 'image' }]);
-
 const categoryController = require('../controllers/category');
 const productController = require('../controllers/products');
 const unitController = require('../controllers/unit');
@@ -19,6 +20,7 @@ const {} = require('../controllers/index');
 app.post('/users', userUpload, userController.createUser);
 app.post('/user/login', userController.Login);
 app.get('/users', userController.fetchUsers);
+// app.get('/users',passport.authenticate('jwt', { session: false }), userController.fetchUsers);
 app.get('/users/:id', userController.fetchUserByID);
 app.patch('/users/:id',userUpload, userController.updateUser);
 app.delete('/users/:id', userController.deleteUser);
@@ -60,7 +62,7 @@ app.delete(
 
 app.post('/orders',orderUpload, orderController.createOrderController);
 app.get('/orders', orderController.getOrderController);
-app.patch('/orders/:id', orderController.updateOrderController);
+app.patch('/orders/:id',orderUpload, orderController.updateOrderController);
 app.delete('/orders/:id', orderController.deleteOrderController);
 
 module.exports = app;

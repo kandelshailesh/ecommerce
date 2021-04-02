@@ -1,13 +1,16 @@
+// import users from '../models/users';
+
 const {
   category,
   products,
   orders,
   guest_orders,
   orders_item,
+  users,
   guest_orders_item,
 } = require('../models');
 const { too, ReS, ReE, TE, paginate } = require('./util');
-
+const moment=require('moment')
 const omit = require('lodash/omit');
 
 export const createOrder = async param => {
@@ -16,7 +19,7 @@ export const createOrder = async param => {
    
     [err1, data1] = await too(
       orders.findOne({
-        where: { user_id: param['user_id']},
+        where: { user_id: param['user_id'],status:'PENDING'},
       }),
     );
 
@@ -75,7 +78,8 @@ export const getOrder = async param => {
         where: Object.keys(query).length > 0 ? query : '',
         ...paginate(page, limit),
         include: [
-          { model: orders_item, include: [{ model: products }] }
+          { model: orders_item, include: [{ model: products }]},
+          {model:users,attributes: ['id','fullName','username','email']}
         ],
       }),
     );
@@ -88,6 +92,7 @@ export const getOrder = async param => {
 };
 
 export const updateOrder = async (param, id) => {
+  console.log("Create",param)
   try {
     const [err, data] = await too(
       orders.findOne(param, {
