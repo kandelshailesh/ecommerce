@@ -34,19 +34,18 @@ export const createOrder = async param => {
     if (err1) TE(err1.message);
     if (!data1) {
       [err, data] = await too(orders.create(param));
-      console.log("data",data
-      )
+      console.log("data",data )
       if (err) return TE(err.message);
       [err2, data2] = await too(orders_item.bulkCreate(await result()));
       console.log("data2",data2)
+      if (err2) TE(err2.message);
     } else {
       const [err3, data3] = await too(
         orders_item.destroy({
           where: { id: param['deleted_item'] ? param['deleted_item'] : 0 },
         }),
       );
-      console.log("data1lse",data3
-      )
+      console.log("data1lse",data3)
       if (err3) TE('Error in deleteing order item');
       [err4, data4] = await too(orders.update(param,{
         where:{id:data1.id}
@@ -55,10 +54,10 @@ export const createOrder = async param => {
       [err2, data2] = await too(orders_item.bulkCreate(await result()), {
         updateOnDuplicate: ['product_id'],
       });
-      console.log("data2 else",data2 ,await result())
+      // console.log("data2 else",data2 ,await result())
 
     }
-    return data1
+    return true
 
   } catch (error) {
     TE(error.message);

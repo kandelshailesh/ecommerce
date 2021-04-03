@@ -6,7 +6,7 @@ const omit = require("lodash/omit");
 export const createSubscribedItem = async (param) => {
   try {
     const [err, data] = await too(subscribed_item.create(param));
-    if (err) TE(error.message);
+    if (err) TE(err.message);
     if (data) return data;
   } catch (error) {
     TE(error.message);
@@ -46,7 +46,10 @@ export const updateSubscribedItem = async (param, id) => {
     );
     if (err) TE(err.message);
     if (!data) TE("SOMETHING WENT WRONG WHILE UPDATING");
-    return data;
+    const [err1, data1] = await too(subscribed_item.findOne({ where: { id: id } }));
+    if (err1) TE(err1.message);
+    if (!data1) TE('SOMETHING WENT WRONG WHILE FETCHING');
+    return data1;
   } catch (error) {
     TE(error.message);
   }
