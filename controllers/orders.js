@@ -4,6 +4,8 @@ import {
   deleteOrder,
   getOrder,
   updateOrder,
+  getSuccessOrder,
+  checkoutOrder,
 } from '../services/order';
 
 const { too, ReS, ReE, TE } = require('../services/util');
@@ -11,15 +13,15 @@ const { status_codes_msg } = require('../utils/appStatics');
 
 export const createOrderController = async (req, res) => {
   const param = req.body;
-  console.log("params",param,req.files)
+  console.log('params', param, req.files);
   if (req.files) {
     param.image = req.files['image'] ? req.files['image'][0].path : null;
   }
- 
+
   // console.log("params2",param?.order_item,param.image)
   try {
     const [err, newPackage] = await too(createOrder(param));
-    console.log("DARA Return",err,newPackage)
+    console.log('DARA Return', err, newPackage);
     if (err) {
       ReE(res, err, status_codes_msg.FAILED.code);
     }
@@ -51,6 +53,56 @@ export const getOrderController = async (req, res) => {
         res,
         {
           message: `FETCH SUCCESSFULLY`,
+          DATA: packageByKey?.rows,
+        },
+        status_codes_msg.SUCCESS.code,
+      );
+    }
+  } catch (error) {
+    return ReE(res, error, status_codes_msg.FAILED.code);
+  }
+};
+
+export const getSuccessOrderController = async (req, res) => {
+  const param = req.query;
+  try {
+    const [err, packageByKey] = await too(getSuccessOrder(param));
+
+    if (err) {
+      return ReE(res, err, status_codes_msg.FAILED.code);
+    }
+    if (packageByKey) {
+      return ReS(
+        res,
+        {
+          message: `FETCH SUCCESSFULLY`,
+          DATA: packageByKey?.rows,
+        },
+        status_codes_msg.SUCCESS.code,
+      );
+    }
+  } catch (error) {
+    return ReE(res, error, status_codes_msg.FAILED.code);
+  }
+};
+
+export const checkoutOrderController = async (req, res) => {
+  console.log('Checkout', req.body);
+  const param = req.body;
+  if (req.files) {
+    param.image = req.files['image'] ? req.files['image'][0].path : null;
+  }
+  try {
+    const [err, packageByKey] = await too(checkoutOrder(param));
+
+    if (err) {
+      return ReE(res, err, status_codes_msg.FAILED.code);
+    }
+    if (packageByKey) {
+      return ReS(
+        res,
+        {
+          message: `Successfully placed`,
           DATA: packageByKey?.rows,
         },
         status_codes_msg.SUCCESS.code,

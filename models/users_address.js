@@ -2,7 +2,7 @@ const SequelizeSlugify = require('sequelize-slugify');
 
 module.exports = (sequlize, DataTypes) => {
   let Model = sequlize.define(
-    'users_address',
+    'address',
     {
       id: {
         type: DataTypes.INTEGER(11),
@@ -10,29 +10,23 @@ module.exports = (sequlize, DataTypes) => {
         primaryKey: true,
         autoIncrement: true,
       },
-      user_id: {
+      order_id: {
         type: DataTypes.STRING(255),
         allowNull: false,
       },
-      country: {
-        type: DataTypes.STRING(255),
-        defaultValue: 'Nepal',
-      },
-      state: {
+      shipping: {
         type: DataTypes.STRING(255),
       },
-      city: {
-        type: DataTypes.STRING(255),
-      },
-      address: {
+      billing: {
         type: DataTypes.STRING(255),
       },
     },
     {
       paranoid: true,
-      tableName: 'users_address',
+      tableName: 'address',
     },
   );
 
+  Model.associate = function (model) {};
   return Model;
 };

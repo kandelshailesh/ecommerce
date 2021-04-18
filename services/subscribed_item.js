@@ -1,10 +1,12 @@
 const { subscribed_item, products, users } = require('../models');
 const { too, ReS, ReE, TE, paginate } = require('./util');
-
+const moment = require('moment');
 const omit = require('lodash/omit');
 
 export const createSubscribedItem = async param => {
   try {
+    console.log(param);
+    param['subscribed_date'] = moment();
     const [err, data] = await too(subscribed_item.create(param));
     if (err) TE(err.message);
     if (data) return data;

@@ -19,6 +19,7 @@ export const createProductController = async (req, res) => {
   }
 
   console.log(param);
+
   try {
     const [err, newPackage] = await too(createProduct(param));
     if (err) {

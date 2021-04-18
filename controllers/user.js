@@ -1,5 +1,5 @@
 const { users } = require('../models');
-const { too,TE, ReS, ReE } = require('../utils');
+const { too, TE, ReS, ReE } = require('../utils');
 const { status_codes_msg, STRINGS } = require('../utils/statusCode.js');
 const UserService = require('../services/users');
 const { Op } = require('sequelize');
@@ -101,6 +101,7 @@ export const fetchUserByID = async (req, res) => {
 };
 
 export const Login = async (req, res) => {
+  console.log(req.body);
   try {
     const { email, password, username = '' } = req.body;
     let [err, user] = await too(

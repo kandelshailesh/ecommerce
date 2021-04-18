@@ -20,5 +20,8 @@ module.exports = (sequlize, DataTypes) => {
     },
   );
 
+  Model.associate = function (model) {
+    this.hasMany(model.products, { foreignKey: 'unit_id', sourceKey: 'id' });
+  };
   return Model;
 };

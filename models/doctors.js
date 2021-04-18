@@ -14,6 +14,10 @@ module.exports = (sequlize, DataTypes) => {
         type: DataTypes.STRING(255),
         allowNull: false,
       },
+      post: {
+        type: DataTypes.STRING(255),
+        allowNull: false,
+      },
       hospital: {
         type: DataTypes.STRING,
       },

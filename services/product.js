@@ -6,6 +6,7 @@ const omit = require('lodash/omit');
 export const createProduct = async param => {
   try {
     const [err, data] = await too(products.create(param));
+    console.log(err);
     if (err) TE(err.message);
     if (data) return data;
   } catch (error) {

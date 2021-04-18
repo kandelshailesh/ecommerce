@@ -13,7 +13,6 @@ module.exports = (sequlize, DataTypes) => {
       user_id: {
         type: DataTypes.INTEGER(11),
         allowNull: false,
-        unique: true,
       },
       gross_amount: {
         type: DataTypes.DOUBLE(11),
@@ -79,9 +78,12 @@ module.exports = (sequlize, DataTypes) => {
 
   Model.associate = function (models) {
     this.belongsTo(models.users, { foreignKey: 'user_id', targetKey: 'id' });
-    this.hasMany(models.orders_item, { foreignKey: 'order_id', sourceKey: 'id' });
+    this.hasMany(models.orders_item, {
+      foreignKey: 'order_id',
+      sourceKey: 'id',
+    });
+    this.belongsTo(models.address, { foreignKey: 'id', targetKey: 'order_id' });
   };
 
-  
   return Model;
 };

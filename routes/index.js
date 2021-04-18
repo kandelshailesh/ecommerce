@@ -23,7 +23,7 @@ app.post('/user/login', userController.Login);
 app.get('/users', userController.fetchUsers);
 // app.get('/users',passport.authenticate('jwt', { session: false }), userController.fetchUsers);
 app.get('/users/:id', userController.fetchUserByID);
-app.patch('/users/:id',userUpload, userController.updateUser);
+app.patch('/users/:id', userUpload, userController.updateUser);
 app.delete('/users/:id', userController.deleteUser);
 
 app.post('/category', categoryController.createCategoryController);
@@ -47,7 +47,11 @@ app.delete('/unit/:id', unitController.deleteUnitController);
 
 app.post('/doctors', doctorUpload, doctorController.createDoctorController);
 app.get('/doctors', doctorController.getDoctorController);
-app.patch('/doctors/:id', doctorUpload, doctorController.updateDoctorController);
+app.patch(
+  '/doctors/:id',
+  doctorUpload,
+  doctorController.updateDoctorController,
+);
 app.delete('/doctor/:id', doctorController.deleteDoctorController);
 
 app.post('/users/address', userAddressController.createUserAddressController);
@@ -61,16 +65,15 @@ app.delete(
   userAddressController.deleteUserAddressController,
 );
 
-app.post('/orders',orderUpload, orderController.createOrderController);
+app.post('/orders', orderUpload, orderController.createOrderController);
 app.get('/orders', orderController.getOrderController);
-app.patch('/orders/:id',orderUpload, orderController.updateOrderController);
+app.post('/orders/checkout',orderUpload, orderController.checkoutOrderController);
+app.get('/success_orders', orderController.getSuccessOrderController);
+app.patch('/orders/:id', orderUpload, orderController.updateOrderController);
 app.delete('/orders/:id', orderController.deleteOrderController);
-
 app.post('/subscriber', subscriberController.createSubscriber);
 app.get('/subscriber', subscriberController.getSubscriber);
-app.patch('/subscriber/:id',subscriberController.updateSubscriber);
+app.patch('/subscriber/:id', subscriberController.updateSubscriber);
 app.delete('/subscriber/:id', subscriberController.deleteSubscriber);
-
- 
 
 module.exports = app;
