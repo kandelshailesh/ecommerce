@@ -3,6 +3,18 @@ const { too, TE, ReS, ReE } = require('../utils');
 const { status_codes_msg, STRINGS } = require('../utils/statusCode.js');
 const UserService = require('../services/users');
 const { Op } = require('sequelize');
+const bcrypt = require('bcrypt');
+
+
+export const passwordEncrypt = async password => {
+  let salt, hash, err;
+  [err, salt] = await too(bcrypt.genSalt(10));
+  if (err) TE(err.message, true);
+  console.log(salt);
+  [err, hash] = await too(bcrypt.hash(password, salt));
+  if (err) TE(err.message, true);
+  return hash;
+};
 
 export const createUser = async (req, res) => {
   try {
@@ -31,19 +43,31 @@ export const createUser = async (req, res) => {
 export const updateUser = async (req, res) => {
   try {
     const { id } = req.params;
-    if (req.files) {
+ if (req?.files?.image) {
       req.body.image = req.files['image'] ? req.files['image'][0].path : null;
+    }
+
+    if (req.body.password) {
+      const pas = await passwordEncrypt(param.password);
+      req.body.password = pas;
+      req.body.passwordChangedAt = Date.now();
     }
     const [err, data] = await too(
       users.update(req.body, { where: { id: id } }),
     );
     if (err) return ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
     if (data)
+    {
+       const [err1, data1] = await too(
+      users.findOne({ where: { id: id } }),
+    );
+
       return ReS(
         res,
-        { message: 'User update successfully', data: data },
+        { message: 'User updated successfully', data: data1 },
         status_codes_msg.CREATED.code,
       );
+    }
   } catch (error) {
     return ReE(res, error, status_codes_msg.INVALID_ENTITY.code);
   }
@@ -68,7 +92,9 @@ export const deleteUser = async (req, res) => {
 export const fetchUsers = async (req, res) => {
   try {
     // const { id } = req.params;
-    const [err, data] = await too(users.findAll());
+    const [err, data] = await too(users.findAll( {attributes: {
+          exclude: ['password'],
+        }}));
     // console.log("data",data)
     if (err) ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
     if (data) {
@@ -133,4 +159,38 @@ export const Login = async (req, res) => {
   }
 };
 
-export const updatePassword = async (req, res) => {};
+export const updatePassword = async (req, res) => 
+{
+ try {
+    console.log(req.body);
+    const { id } = req.params;
+    const param = req.body;
+    const { password, new_password } = req.body;
+    let [err, user] = await too(
+      users.findOne({
+        where: { id: id },
+      }),
+    );
+    if (err) TE(err.message);
+    if (!user) TE('User not registered');
+    [err, user] = await too(user.comparePassword(password));
+    if (err) TE(err.message);
+    if (param.new_password) {
+      const pas = await passwordEncrypt(param.new_password);
+      param.password = pas;
+      param.passwordChangedAt = Date.now();
+    }
+    const [err2, data] = await too(users.update(param, { where: { id: id } }));
+    if (err) return ReE(res, err, status_codes_msg.INVALID_ENTITY.code);
+    if (data) {
+      const [err1, data1] = await too(users.findOne({ where: { id: id } }));
+      return ReS(
+        res,
+        { message: 'Password changed successfully', data: data1 },
+        status_codes_msg.CREATED.code,
+      );
+    }
+  } catch (error) {
+    return ReE(res, error, status_codes_msg.INVALID_ENTITY.code);
+  }
+};

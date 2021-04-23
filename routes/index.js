@@ -26,6 +26,8 @@ app.get('/users/:id', userController.fetchUserByID);
 app.patch('/users/:id', userUpload, userController.updateUser);
 app.delete('/users/:id', userController.deleteUser);
 
+app.patch('/users/change_password/:id', userController.updatePassword);
+
 app.post('/category', categoryController.createCategoryController);
 app.get('/category', categoryController.getCategoryController);
 app.patch('/category/:id', categoryController.updateCategoryController);
