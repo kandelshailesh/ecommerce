@@ -18,15 +18,12 @@ const { Op } = require('sequelize');
 export const createOrder = async param => {
   try {
     let err, data, err2, data2, err1, err4, data4, data1;
-
-    console.log("Order param",param);
-
+    console.log('Order param', param);
     [err1, data1] = await too(
       orders.findOne({
         where: { user_id: param['user_id'], status: 'PENDING' },
       }),
     );
-
     const result = orderId =>
       Promise.all(
         param['order_item']?.map((item, i) => ({
@@ -56,9 +53,9 @@ export const createOrder = async param => {
           where: { id: data1.id },
         }),
       );
-      if (err4) TE('Error in while updating image');
+      if (err4) TE(err4.message);
       [err2, data2] = await too(
-        orders_item.bulkCreate(await result(), {
+        orders_item.bulkCreate(await result(data1.id), {
           updateOnDuplicate: ['product_id', 'quantity'],
           returning: true,
         }),
@@ -79,10 +76,63 @@ export const getOrder = async param => {
   if (!page) page = 1;
   if (!limit) limit = 20;
   const query = omit(param, ['page', 'limit']);
+
+  if (param['user_id']) {
+    try {
+      const [err, allModules] = await too(
+        orders.findAndCountAll({
+          where: { user_id: param['user_id'], status: 'PENDING' },
+          ...paginate(page, limit),
+          include: [
+            { model: orders_item, include: [{ model: products }] },
+            {
+              model: users,
+              attributes: ['id', 'fullName', 'username', 'email'],
+            },
+          ],
+        }),
+      );
+      if (err) TE(err.message);
+      if (!allModules) TE('SOMETHING WENT WRONG WHILE FETCHING');
+      console.log(allModules);
+      return allModules;
+    } catch (error) {
+      TE(error.message);
+    }
+  } else {
+    try {
+      const [err, allModules] = await too(
+        orders.findAndCountAll({
+          ...paginate(page, limit),
+          include: [
+            { model: orders_item, include: [{ model: products }] },
+            {
+              model: users,
+              attributes: ['id', 'fullName', 'username', 'email'],
+            },
+          ],
+        }),
+      );
+      if (err) TE(err.message);
+      if (!allModules) TE('SOMETHING WENT WRONG WHILE FETCHING');
+      console.log(allModules);
+      return allModules;
+    } catch (error) {
+      TE(error.message);
+    }
+  }
+};
+
+export const getOrderByAdmin = async param => {
+  let page, limit;
+  page = parseInt(param['page']);
+  limit = parseInt(param['limit']);
+  if (!page) page = 1;
+  if (!limit) limit = 20;
+  const query = omit(param, ['page', 'limit']);
   try {
     const [err, allModules] = await too(
       orders.findAndCountAll({
-        where: { user_id: param['user_id'], status: 'PENDING' },
         ...paginate(page, limit),
         include: [
           { model: orders_item, include: [{ model: products }] },
@@ -144,28 +194,27 @@ export const updateOrder = async (param, id) => {
     if (!data) TE('Order ID not found');
     if (param['status']) {
       if (param['status'] !== data.status) {
-        'PENDING', 'ACTIVE', 'CANCELLED', 'SHIPPING', 'COMPLETED';
         switch (param['status']) {
           case 'PENDING':
-            param['status'] = 'PENDING';
-            param['ordered_date'] = moment();
+            data['status'] = 'PENDING';
+            data['ordered_date'] = moment();
             break;
           case 'ACTIVE':
-            param['status'] = 'ACTIVE';
-            param['requested_date'] = moment();
+            data['status'] = 'ACTIVE';
+            data['requested_date'] = moment();
             break;
           case 'CANCELLED':
-            param['status'] = 'CANCELLED';
-            param['cancelled_date'] = moment();
+            data['status'] = 'CANCELLED';
+            data['cancelled_date'] = moment();
             break;
           case 'SHIPPING':
-            param['status'] = 'SHIPPING';
-            param['shipping_date'] = moment();
+            data['status'] = 'SHIPPING';
+            data['shipping_date'] = moment();
             break;
           case 'COMPLETED':
-            param['status'] = 'COMPLETED';
-            param['completed_date'] = moment();
-            param['paid_amount'] = orders.total_amount;
+            data['status'] = 'COMPLETED';
+            data['completed_date'] = moment();
+            data['paid_amount'] = orders.total_amount;
             break;
         }
       }
@@ -185,7 +234,9 @@ export const checkoutOrder = async param => {
       orders.update(param, { where: { id: param['id'] } }),
     );
     if (err) TE(err.message);
-    const [err1, data1] = await too(address.create(JSON.parse(param['address'])));
+    const [err1, data1] = await too(
+      address.create(JSON.parse(param['address'])),
+    );
     if (err1) TE(err1.message);
     return data1;
   } catch (err) {

@@ -6,6 +6,7 @@ import {
   updateOrder,
   getSuccessOrder,
   checkoutOrder,
+  getOrderByAdmin,
 } from '../services/order';
 
 const { too, ReS, ReE, TE } = require('../services/util');
@@ -44,6 +45,29 @@ export const getOrderController = async (req, res) => {
   const param = req.query;
   try {
     const [err, packageByKey] = await too(getOrder(param));
+
+    if (err) {
+      return ReE(res, err, status_codes_msg.FAILED.code);
+    }
+    if (packageByKey) {
+      return ReS(
+        res,
+        {
+          message: `FETCH SUCCESSFULLY`,
+          DATA: packageByKey?.rows,
+        },
+        status_codes_msg.SUCCESS.code,
+      );
+    }
+  } catch (error) {
+    return ReE(res, error, status_codes_msg.FAILED.code);
+  }
+};
+
+export const getOrderByAdminController = async (req, res) => {
+  const param = req.query;
+  try {
+    const [err, packageByKey] = await too(getOrderByAdmin(param));
 
     if (err) {
       return ReE(res, err, status_codes_msg.FAILED.code);
