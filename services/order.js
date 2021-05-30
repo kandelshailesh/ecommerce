@@ -133,6 +133,7 @@ export const getOrderByAdmin = async param => {
   try {
     const [err, allModules] = await too(
       orders.findAndCountAll({
+        where: Object.keys(query).length > 0 ? query : '',
         ...paginate(page, limit),
         include: [
           { model: orders_item, include: [{ model: products }] },

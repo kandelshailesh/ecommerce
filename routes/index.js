@@ -68,7 +68,7 @@ app.delete(
 );
 
 app.post('/orders', orderUpload, orderController.createOrderController);
-app.get('/orders', orderController.getOrderController);
+app.get('/orders_client', orderController.getOrderController);
 app.post(
   '/orders/checkout',
   orderUpload,
@@ -77,7 +77,7 @@ app.post(
 app.get('/success_orders', orderController.getSuccessOrderController);
 app.patch('/orders/:id', orderUpload, orderController.updateOrderController);
 app.delete('/orders/:id', orderController.deleteOrderController);
-app.get('/admin_orders', orderController.getOrderByAdminController);
+app.get('/orders', orderController.getOrderByAdminController);
 app.post('/subscriber', subscriberController.createSubscriber);
 app.get('/subscriber', subscriberController.getSubscriber);
 app.patch('/subscriber/:id', subscriberController.updateSubscriber);
